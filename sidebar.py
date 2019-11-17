@@ -4,6 +4,8 @@ from PyQt5.QtWebEngineWidgets import *
 import sys
 from PyQt5.QtCore import *
 from random import randint
+import subprocess
+import os
 
 class Sidebar(QWidget):
     def __init__(self):
@@ -33,22 +35,15 @@ class Sidebar(QWidget):
                                     QPushButton:hover {
                                         background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 #4685d9, stop: 1 #89c8f1);
                                     }; height: 24px; border: none; color:white; font-weight: bold;''')
-        self.clickable.setText('Close Sidebar')
+        self.clickable.setText('Add Gadget')
 
-        self.clickable.clicked.connect(exit)
-        for i in range(4):
-            r = randint(0, 2)
-            '''if r == 0:
-                self.gadgets.append(QPushButton())
-                self.gadgets[-1].setText(f'Button #{randint(0, 65535)}')
+        self.clickable.clicked.connect(self.add_gadget)
+        for i in range(0):
+            r = randint(0, 1)
+            if r == 0:
+                self.gadgets.append(GadgetText())
             elif r == 1:
-                self.gadgets.append(QTextEdit())
-                self.gadgets[-1].setText(f'Multiline #{randint(0, 65535)}')
-            elif r == 2:
-                self.gadgets.append(QWebEngineView())
-                self.gadgets[-1].load(QUrl('https://ya.ru/'))'''
-            self.gadgets.append(SidebarText())
-            self.gadgets[-1].setStyleSheet('background-color:#3364af')
+                self.gadgets.append(GadgetWeb())
             # self.gadgets[-1].setFrameShape(QFrame.StyledPanel)
             self.splitter.addWidget(self.gadgets[-1])
 
@@ -59,7 +54,11 @@ class Sidebar(QWidget):
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.show()
 
-class SidebarText(QWidget):
+    def add_gadget(self):
+        self.gadgets.append(GadgetLaunch([('sudo apt-get update', 'Windows Store'), ('gnome-terminal', 'gnome-terminal')]))
+        self.splitter.addWidget(self.gadgets[-1])
+
+class Gadget(QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent=parent)
 
@@ -78,13 +77,57 @@ class SidebarText(QWidget):
                                     QPushButton:hover {
                                         background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 #4685d9, stop: 1 #89c8f1);
                                     }; height: 24px; border: none; color:white; font-weight: bold; text-align:left; padding-left:5px;''')
+        self.clickable.setText('Sidebar Gadget')
+
+        self.layout.addWidget(self.clickable)
+
+class GadgetText(Gadget):
+    def __init__(self, parent=None):
+        Gadget.__init__(self, parent=parent)
+
         self.clickable.setText('Text Edit')
 
         self.text = QTextEdit()
         self.text.setStyleSheet('background-color: #00ffffff; border: 1px solid #55ffffff; color:white; padding-left:5px;')
 
-        self.layout.addWidget(self.clickable)
         self.layout.addWidget(self.text)
+
+class GadgetWeb(Gadget):
+    def __init__(self, parent=None):
+        Gadget.__init__(self, parent=parent)
+
+        self.clickable.setText('Web Browser')
+
+        self.browser = QWebEngineView()
+        self.browser.load(QUrl('https://ya.ru/'))
+
+        self.layout.addWidget(self.browser)
+
+class GadgetLaunch(Gadget):
+    def __init__(self, links, parent=None):
+        Gadget.__init__(self, parent=parent)
+
+        self.clickable.setText('Quick Launch')
+
+        self.launchers = []
+        for link in links:
+            self.launchers.append(QPushButton())
+            self.launchers[-1].setStyleSheet('''
+                                    QPushButton {
+                                        background-color: #00000000;
+                                    }
+                                    QPushButton:pressed {
+                                        background-color: #aa000000;     
+                                    }
+                                    QPushButton:hover {
+                                        background-color: #55000000;
+                                    } height: 24px; border: none; color:white; font-weight: bold; text-align:left; padding-left:5px;''')
+            print(link)
+            self.launchers[-1].setText(link[1])
+            self.launchers[-1].clicked.connect(lambda a: os.system(link[0]))
+
+            self.layout.addWidget(self.launchers[-1])
+        self.layout.addStretch()
 
 App = QApplication(sys.argv)
 sidebar = Sidebar()
