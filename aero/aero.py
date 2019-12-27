@@ -1,7 +1,7 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QPushButton
+from PyQt5.QtWidgets import QWidget, QApplication, QPushButton
 from PyQt5.QtGui import QPainter, QPainterPath, QColor, QPen, QBrush, QLinearGradient
-from PyQt5.QtCore import Qt, QPoint
+from PyQt5.QtCore import Qt, QPoint, QRect
 
 
 class AeroButtonBase(QPushButton):
@@ -83,10 +83,10 @@ class AeroButtonBase(QPushButton):
         qp.drawRect(1, 1, button_rect.width() - 2,
                     (button_rect.height() / 2) - 2)
         # Text
-        '''qp.setFont(self.font())
+        qp.setFont(self.font())
         qp.setPen(self.color_text)
         qp.setOpacity(1.0)
-        qp.drawText(QPoint(0, 10), 'Test')'''
+        qp.drawText(QRect(0, 0, button_rect.width(), button_rect.height()), Qt.AlignCenter, self.text())
         qp.end()
 
     def enterEvent(self, event):
@@ -130,8 +130,12 @@ class AeroButton(AeroButtonBase):
         self.color_shadow_pressed = QColor(81, 163, 212)
 
         self.opacity = 1.0
-        self.roundness = 10
+        self.roundness = 4
 
+
+class AeroIconLabel(QWidget):
+    def __init__(self):
+        super().__init__()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

@@ -95,14 +95,17 @@ class Sidebar(QWidget):
 class Gadget(QWidget):
     def __init__(self):
         super().__init__()
-        self.resize(180, 100)
+        self.resize(180, 50)
         self.setAttribute(Qt.WA_TranslucentBackground)
 
         self.layout = QVBoxLayout(self)
         self.layout.setSpacing(0)
         self.layout.setContentsMargins(8, 8, 8, 8)
 
-        self.layout.addWidget(aero.AeroButton())
+        button = aero.AeroButton()
+        button.setText('This game will make you cum')
+        self.layout.addWidget(button)
+        self.layout.addStretch()
 
     def paintEvent(self, event):
         qp = QPainter()
@@ -157,13 +160,14 @@ class Gadget(QWidget):
 class GadgetObama(Gadget):
     def __init__(self):
         super().__init__()
+        self.layout.addStretch()
 
     def paintEvent(self, event):
         qp = QPainter()
         qp.begin(self)
 
         qp.setOpacity(0.4)
-        qp.drawImage(0, 0, QImage('Obamahedron.gif').scaled(
+        qp.drawImage(0, 0, QImage('documents.png').scaled(
             self.rect().width(), self.rect().height()))
 
         super().paintEvent(event)
