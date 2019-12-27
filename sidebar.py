@@ -5,18 +5,21 @@ import sys
 from PyQt5.QtCore import *
 from random import randint
 import subprocess
+import aero.aero as aero
 import os
+
 
 class Sidebar(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle = "Longway Sidebar"
-        self.setGeometry(1366 - 180, 0, 180, 768)
+        self.setGeometry(1920 - 180, 0, 180, 1080 - 50)
 
         self.layout = QVBoxLayout()
         self.layout.setSpacing(0)
         self.layout.setContentsMargins(0, 0, 0, 0)
-        self.setStyleSheet('background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0 #4d77b3, stop: 0.015 #67a6d0, stop: 0.03 #5578ac, stop: 1 #3364af)')
+        self.setStyleSheet(
+            'background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0 #4d77b3, stop: 0.015 #67a6d0, stop: 0.03 #5578ac, stop: 1 #3364af)')
 
         self.gadgets = []
 
@@ -55,8 +58,9 @@ class Sidebar(QWidget):
         self.show()
 
     def add_gadget(self):
-        self.gadgets.append(GadgetLaunch([('sudo apt-get update', 'Windows Store'), ('gnome-terminal', 'gnome-terminal')]))
+        self.gadgets.append(GadgetText())
         self.splitter.addWidget(self.gadgets[-1])
+
 
 class Gadget(QWidget):
     def __init__(self, parent=None):
@@ -81,6 +85,7 @@ class Gadget(QWidget):
 
         self.layout.addWidget(self.clickable)
 
+
 class GadgetText(Gadget):
     def __init__(self, parent=None):
         Gadget.__init__(self, parent=parent)
@@ -88,9 +93,12 @@ class GadgetText(Gadget):
         self.clickable.setText('Text Edit')
 
         self.text = QTextEdit()
-        self.text.setStyleSheet('background-color: #00ffffff; border: 1px solid #55ffffff; color:white; padding-left:5px;')
+        self.text.setStyleSheet(
+            'background-color: #00ffffff; border: 1px solid #55ffffff; color:white; padding-left:5px;')
 
-        self.layout.addWidget(self.text)
+        self.layout.addWidget(aero.AeroButton())
+        #self.layout.addWidget(aero.AeroButtonDark())
+
 
 class GadgetWeb(Gadget):
     def __init__(self, parent=None):
@@ -102,6 +110,7 @@ class GadgetWeb(Gadget):
         self.browser.load(QUrl('https://ya.ru/'))
 
         self.layout.addWidget(self.browser)
+
 
 class GadgetLaunch(Gadget):
     def __init__(self, links, parent=None):
@@ -128,6 +137,7 @@ class GadgetLaunch(Gadget):
 
             self.layout.addWidget(self.launchers[-1])
         self.layout.addStretch()
+
 
 App = QApplication(sys.argv)
 sidebar = Sidebar()
